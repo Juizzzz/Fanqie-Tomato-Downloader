@@ -88,7 +88,25 @@ jobs:
               file_size = os.path.getsize(file_path) / 1024  # KB
               print(f"- {file} ({file_size:.2f} KB)")
           EOF
-          
+
+      - name: 检查正文接口连接
+        run: |
+          echo "===== DNS 解析 ====="
+          getent ahosts rehaofan.jingluo.love || true
+
+          echo "===== IPv4 连接 ====="
+          curl -4 -sS -o /dev/null \
+            --connect-timeout 5 --max-time 10 \
+            -w 'IPv4 HTTP=%{http_code}\n' \
+            http://rehaofan.jingluo.love/ || true
+
+          echo "===== IPv6 连接 ====="
+          curl -6 -sS -o /dev/null \
+            --connect-timeout 5 --max-time 10 \
+            -w 'IPv6 HTTP=%{http_code}\n' \
+            http://rehaofan.jingluo.love/ || true
+
+    
       - name: 下载小说
         run: |
           echo "开始下载小说..."
